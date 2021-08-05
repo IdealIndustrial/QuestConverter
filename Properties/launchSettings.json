@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "QuestConverter": {
+      "commandName": "Project",
+      "commandLineArgs": "\"E:\\Projects\\Квесты IIS\\Ideal-Industrial-Quests\\config\\betterquesting\\DefaultQuests.json\""
+    }
+  }
+}
