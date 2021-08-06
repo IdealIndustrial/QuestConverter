@@ -14,12 +14,13 @@ namespace QuestConverter
         {
             if (args.Length > 0)
             {
-                var inputFileName = args[0];
+
+                var inputSettings = ParseInputSettings(args);
                 DefaultQuests inputJSON;
 
                 try
                 {
-                    inputJSON = JsonConvert.DeserializeObject<DefaultQuests>(File.ReadAllText(inputFileName));
+                    inputJSON = JsonConvert.DeserializeObject<DefaultQuests>(File.ReadAllText(inputSettings.InputFileName));
 
                     Console.WriteLine("Input file have been read successfully");
                 }
@@ -51,9 +52,9 @@ namespace QuestConverter
 
                 var outputQuestsFileName = Path.Combine(Directory.GetCurrentDirectory(), outputQuestsName);
 
-                MakeLang(inputJSON, outputLangFileName);
+                MakeLang(inputJSON, outputLangFileName, inputSettings.KeyGeneration);
 
-                MakeQuestFile(inputJSON, outputQuestsFileName);
+                MakeQuestFile(inputJSON, outputQuestsFileName, inputSettings.KeyGeneration);
 
                 return 0;
             }
@@ -64,18 +65,49 @@ namespace QuestConverter
             }
         }
 
-        private static void MakeQuestFile(DefaultQuests inputJSON, string outputQuestsFileName)
+        private static InputSettings ParseInputSettings(string[] args)
         {
-            foreach (var questLine in inputJSON.questLines)
+            var result = new InputSettings();
+
+            result.InputFileName = args[args.Length - 1];
+            result.KeyGeneration = KeyGenerationMode.IdBased;
+            if (args.Contains("-n") || args.Contains("--name"))
             {
-                questLine.Value.properties.betterQuesting.name = questLine.Value.NameKey;
-                questLine.Value.properties.betterQuesting.desc = questLine.Value.DescKey;
+                result.KeyGeneration = KeyGenerationMode.NameBased;
             }
 
-            foreach (var quest in inputJSON.questDatabase)
+            return result;
+        }
+
+        private static void MakeQuestFile(DefaultQuests inputJSON, string outputQuestsFileName, KeyGenerationMode keygenMode)
+        {
+            if (keygenMode == KeyGenerationMode.IdBased)
             {
-                quest.Value.properties.betterQuesting.name = quest.Value.NameKey;
-                quest.Value.properties.betterQuesting.desc = quest.Value.DescKey;
+                foreach (var questLine in inputJSON.questLines)
+                {
+                    questLine.Value.properties.betterQuesting.name = questLine.Value.NameKeyIdBased;
+                    questLine.Value.properties.betterQuesting.desc = questLine.Value.DescKeyIdBased;
+                }
+
+                foreach (var quest in inputJSON.questDatabase)
+                {
+                    quest.Value.properties.betterQuesting.name = quest.Value.NameKeyIdBased;
+                    quest.Value.properties.betterQuesting.desc = quest.Value.DescKeyIdBased;
+                }
+            }
+            else
+            {
+                foreach (var questLine in inputJSON.questLines)
+                {
+                    questLine.Value.properties.betterQuesting.name = questLine.Value.NameKeyNameBased;
+                    questLine.Value.properties.betterQuesting.desc = questLine.Value.DescKeyNameBased;
+                }
+
+                foreach (var quest in inputJSON.questDatabase)
+                {
+                    quest.Value.properties.betterQuesting.name = quest.Value.NameKeyNameBased;
+                    quest.Value.properties.betterQuesting.desc = quest.Value.DescKeyNameBased;
+                }
             }
             try
             {
@@ -110,27 +142,48 @@ namespace QuestConverter
 
         }
 
-        private static void MakeLang(DefaultQuests inputJSON, string outputLangFileName)
+        private static void MakeLang(DefaultQuests inputJSON, string outputLangFileName, KeyGenerationMode keygenMode)
         {
             var outputLang = new List<string>();
 
             outputLang.Add("#Quest lines");
             outputLang.Add("");
 
-            foreach (var questLine in inputJSON.questLines)
+            if (keygenMode == KeyGenerationMode.IdBased)
             {
-                outputLang.Add(questLine.Value.NameKey + "=" + questLine.Value.properties.betterQuesting.name);
-                outputLang.Add(questLine.Value.DescKey + "=" + questLine.Value.properties.betterQuesting.desc);
+                foreach (var questLine in inputJSON.questLines)
+                {
+                    outputLang.Add(questLine.Value.NameKeyIdBased + "=" + questLine.Value.properties.betterQuesting.name);
+                    outputLang.Add(questLine.Value.DescKeyIdBased + "=" + questLine.Value.properties.betterQuesting.desc);
+                }
+
+                outputLang.Add("#Quests");
+                outputLang.Add("");
+
+                foreach (var quest in inputJSON.questDatabase)
+                {
+                    outputLang.Add(quest.Value.NameKeyIdBased + "=" + quest.Value.properties.betterQuesting.name);
+                    outputLang.Add(quest.Value.DescKeyIdBased + "=" + quest.Value.properties.betterQuesting.desc);
+                }
+            }
+            else if (keygenMode == KeyGenerationMode.NameBased)
+            {
+                foreach (var questLine in inputJSON.questLines)
+                {
+                    outputLang.Add(questLine.Value.NameKeyNameBased + "=" + questLine.Value.properties.betterQuesting.name);
+                    outputLang.Add(questLine.Value.DescKeyNameBased + "=" + questLine.Value.properties.betterQuesting.desc);
+                }
+
+                outputLang.Add("#Quests");
+                outputLang.Add("");
+
+                foreach (var quest in inputJSON.questDatabase)
+                {
+                    outputLang.Add(quest.Value.NameKeyNameBased + "=" + quest.Value.properties.betterQuesting.name);
+                    outputLang.Add(quest.Value.NameKeyNameBased + "=" + quest.Value.properties.betterQuesting.desc);
+                }
             }
 
-            outputLang.Add("#Quests");
-            outputLang.Add("");
-
-            foreach (var quest in inputJSON.questDatabase)
-            {
-                outputLang.Add(quest.Value.NameKey + "=" + quest.Value.properties.betterQuesting.name);
-                outputLang.Add(quest.Value.DescKey + "=" + quest.Value.properties.betterQuesting.desc);
-            }
 
             try
             {

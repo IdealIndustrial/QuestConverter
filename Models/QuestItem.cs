@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
 using QuestConverter.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace QuestConverter.Models
@@ -28,20 +30,45 @@ namespace QuestConverter.Models
 
 
         [JsonIgnore]
-        public string NameKey
+        public string NameKeyIdBased
         {
             get
             {
-                return "quest" + questID + ".name";
+                return "bq.quest" + questID + ".name";
             }
         }
         [JsonIgnore]
-        public string DescKey
+        public string DescKeyIdBased
         {
             get
             {
-                return "quest" + questID + ".desc";
+                return "bq.quest" + questID + ".desc";
             }
+        }
+
+        [JsonIgnore]
+        public string NameKeyNameBased
+        {
+            get
+            {
+                return "bq.quest." + keyFromName + ".name";
+            }
+        }
+        [JsonIgnore]
+        public string DescKeyNameBased
+        {
+            get
+            {
+                return "bq.quest." + keyFromName + ".desc";
+            }
+        }
+
+        [JsonIgnore]
+        public string keyFromName { 
+            get 
+            {
+                return Regex.Replace(Regex.Replace(properties.betterQuesting.name, "[^a-zA-Z0-9 ]", String.Empty), " ", "_").ToLowerInvariant();
+            } 
         }
 
         public class QuestProperty

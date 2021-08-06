@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace QuestConverter.Models
@@ -42,17 +43,43 @@ namespace QuestConverter.Models
         }
 
         [JsonIgnore]
-        public string NameKey { get
+        public string NameKeyIdBased { get
             {
-                return "questLine" + lineID + ".name";
+                return "bq.questline" + lineID + ".name";
             } 
         }
         [JsonIgnore]
-        public string DescKey
+        public string DescKeyIdBased
         {
             get
             {
-                return "questLine" + lineID + ".desc";
+                return "bq.questline" + lineID + ".desc";
+            }
+        }
+
+        [JsonIgnore]
+        public string NameKeyNameBased
+        {
+            get
+            {
+                return "bq.questline." + keyFromName + ".name";
+            }
+        }
+        [JsonIgnore]
+        public string DescKeyNameBased
+        {
+            get
+            {
+                return "bq.questline." + keyFromName + ".desc";
+            }
+        }
+
+        [JsonIgnore]
+        public string keyFromName
+        {
+            get
+            {
+                return Regex.Replace(Regex.Replace(properties.betterQuesting.name, "[^a-zA-Z0-9 ]", String.Empty), " ", "_").ToLowerInvariant();
             }
         }
     }
