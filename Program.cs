@@ -180,7 +180,7 @@ namespace QuestConverter
                 foreach (var quest in inputJSON.questDatabase)
                 {
                     outputLang.Add(quest.Value.NameKeyNameBased + "=" + quest.Value.properties.betterQuesting.name);
-                    outputLang.Add(quest.Value.NameKeyNameBased + "=" + quest.Value.properties.betterQuesting.desc);
+                    outputLang.Add(quest.Value.DescKeyNameBased + "=" + quest.Value.properties.betterQuesting.desc);
                 }
             }
 
