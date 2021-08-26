@@ -85,28 +85,29 @@ namespace QuestConverter
             {
                 foreach (var questLine in inputJSON.questLines)
                 {
-                    questLine.Value.properties.betterQuesting.name = questLine.Value.NameKeyIdBased;
                     questLine.Value.properties.betterQuesting.desc = questLine.Value.DescKeyIdBased;
+                    questLine.Value.properties.betterQuesting.name = questLine.Value.NameKeyIdBased;
                 }
 
                 foreach (var quest in inputJSON.questDatabase)
                 {
-                    quest.Value.properties.betterQuesting.name = quest.Value.NameKeyIdBased;
                     quest.Value.properties.betterQuesting.desc = quest.Value.DescKeyIdBased;
+                    quest.Value.properties.betterQuesting.name = quest.Value.NameKeyIdBased;
                 }
             }
             else
             {
                 foreach (var questLine in inputJSON.questLines)
                 {
-                    questLine.Value.properties.betterQuesting.name = questLine.Value.NameKeyNameBased;
                     questLine.Value.properties.betterQuesting.desc = questLine.Value.DescKeyNameBased;
+                    questLine.Value.properties.betterQuesting.name = questLine.Value.NameKeyNameBased;
                 }
 
                 foreach (var quest in inputJSON.questDatabase)
                 {
-                    quest.Value.properties.betterQuesting.name = quest.Value.NameKeyNameBased;
                     quest.Value.properties.betterQuesting.desc = quest.Value.DescKeyNameBased;
+                    quest.Value.properties.betterQuesting.name = quest.Value.NameKeyNameBased;
+
                 }
             }
             try
